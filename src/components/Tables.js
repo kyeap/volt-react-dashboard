@@ -6,7 +6,7 @@ import { Col, Row, Nav, Card, Image, Button, Table, Dropdown, ProgressBar, Pagin
 import { Link } from 'react-router-dom';
 
 import { Routes } from "../routes";
-import { pageVisits, pageTraffic, pageRanking } from "../data/tables";
+import { grants, pageTraffic, pageRanking } from "../data/tables";
 import transactions from "../data/transactions";
 import commands from "../data/commands";
 
@@ -26,19 +26,16 @@ const ValueChange = ({ value, suffix }) => {
 
 export const PageVisitsTable = () => {
   const TableRow = (props) => {
-    const { pageName, views, returnValue, bounceRate } = props;
-    const bounceIcon = bounceRate < 0 ? faArrowDown : faArrowUp;
-    const bounceTxtColor = bounceRate < 0 ? "text-danger" : "text-success";
+    const { grantsName, appReceived, appAllocated, casesClose, casesOpen, casesApproved } = props;
 
     return (
       <tr>
-        <th scope="row">{pageName}</th>
-        <td>{views}</td>
-        <td>${returnValue}</td>
-        <td>
-          <FontAwesomeIcon icon={bounceIcon} className={`${bounceTxtColor} me-3`} />
-          {Math.abs(bounceRate)}%
-        </td>
+        <th scope="row">{grantsName}</th>
+        <td>{appReceived}</td>
+        <td>{appAllocated}</td>
+        <td>{casesClose}</td>
+        <td>{casesOpen}</td>
+        <td>{casesApproved}</td>
       </tr>
     );
   };
@@ -48,7 +45,7 @@ export const PageVisitsTable = () => {
       <Card.Header>
         <Row className="align-items-center">
           <Col>
-            <h5>Page visits</h5>
+            <h5>Grants</h5>
           </Col>
           <Col className="text-end">
             <Button variant="secondary" size="sm">See all</Button>
@@ -58,14 +55,16 @@ export const PageVisitsTable = () => {
       <Table responsive className="align-items-center table-flush">
         <thead className="thead-light">
           <tr>
-            <th scope="col">Page name</th>
-            <th scope="col">Page Views</th>
-            <th scope="col">Page Value</th>
-            <th scope="col">Bounce rate</th>
+            <th scope="col">Grant name</th>
+            <th scope="col">Received</th>
+            <th scope="col">Allocated</th>
+            <th scope="col">closed</th>
+            <th scope="col">Open</th>
+            <th scope="col">Approved</th>
           </tr>
         </thead>
         <tbody>
-          {pageVisits.map(pv => <TableRow key={`page-visit-${pv.id}`} {...pv} />)}
+          {grants.map(pv => <TableRow key={`page-visit-${pv.id}`} {...pv} />)}
         </tbody>
       </Table>
     </Card>

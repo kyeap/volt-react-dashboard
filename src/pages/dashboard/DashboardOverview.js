@@ -27,11 +27,11 @@ export default () => {
               <FontAwesomeIcon icon={faUserShield} className="me-2" /> Preview Security
             </Dropdown.Item>
 
-            <Dropdown.Divider />
+            {/* <Dropdown.Divider />
 
             <Dropdown.Item className="fw-bold">
               <FontAwesomeIcon icon={faRocket} className="text-danger me-2" /> Upgrade to Pro
-            </Dropdown.Item>
+            </Dropdown.Item> */}
           </Dropdown.Menu>
         </Dropdown>
 
@@ -42,25 +42,25 @@ export default () => {
       </div>
 
       <Row className="justify-content-md-center">
-        <Col xs={12} className="mb-4 d-none d-sm-block">
+        {/* <Col xs={12} className="mb-4 d-none d-sm-block">
           <SalesValueWidget
-            title="Sales Value"
-            value="10,567"
+            title="Totsl Payments Made"
+            value="2875826"
             percentage={10.57}
           />
         </Col>
         <Col xs={12} className="mb-4 d-sm-none">
           <SalesValueWidgetPhone
-            title="Sales Value"
-            value="10,567"
+            title="Totsl Payments Made"
+            value="2875826"
             percentage={10.57}
           />
-        </Col>
+        </Col> */}
         <Col xs={12} sm={6} xl={4} className="mb-4">
           <CounterWidget
-            category="Customers"
-            title="345k"
-            period="Feb 1 - Apr 1"
+            category="Number of grants handled"
+            title="20"
+            period="Feb 1 2020- Apr 1 2022"
             percentage={18.2}
             icon={faChartLine}
             iconColor="shape-secondary"
@@ -69,9 +69,9 @@ export default () => {
 
         <Col xs={12} sm={6} xl={4} className="mb-4">
           <CounterWidget
-            category="Revenue"
-            title="$43,594"
-            period="Feb 1 - Apr 1"
+            category="Total Payments Made"
+            title="£2875826"
+            period="Feb 1 2022- Apr 1 2022"
             percentage={28.4}
             icon={faCashRegister}
             iconColor="shape-tertiary"
@@ -80,7 +80,7 @@ export default () => {
 
         <Col xs={12} sm={6} xl={4} className="mb-4">
           <CircleChartWidget
-            title="Traffic Share"
+            title="Types of buisnesses applied"
             data={trafficShares} />
         </Col>
       </Row>
@@ -88,23 +88,23 @@ export default () => {
       <Row>
         <Col xs={12} xl={12} className="mb-4">
           <Row>
-            <Col xs={12} xl={8} className="mb-4">
+            <Col xs={12} xl={12} className="mb-4">
               <Row>
                 <Col xs={12} className="mb-4">
                   <PageVisitsTable />
                 </Col>
 
-                <Col xs={12} lg={6} className="mb-4">
+                {/* <Col xs={12} lg={6} className="mb-4">
                   <TeamMembersWidget />
                 </Col>
 
                 <Col xs={12} lg={6} className="mb-4">
                   <ProgressTrackWidget />
-                </Col>
+                </Col> */}
               </Row>
             </Col>
 
-            <Col xs={12} xl={4}>
+            {/* <Col xs={12} xl={4}>
               <Row>
                 <Col xs={12} className="mb-4">
                   <BarChartWidget
@@ -122,7 +122,7 @@ export default () => {
                   <AcquisitionWidget />
                 </Col>
               </Row>
-            </Col>
+            </Col> */}
           </Row>
         </Col>
       </Row>
