@@ -48,7 +48,9 @@ export const PageVisitsTable = () => {
             <h5>Grants</h5>
           </Col>
           <Col className="text-end">
-            <Button variant="secondary" size="sm">See all</Button>
+            <Button variant="secondary" size="sm">
+              <Link to={Routes.Transactions.path}> See all </Link>
+            </Button>
           </Col>
         </Row>
       </Card.Header>
