@@ -9,6 +9,16 @@ import FranceFlag from '../assets/img/flags/france.svg';
 import JapanFlag from '../assets/img/flags/japan.svg';
 import ItalyFlag from '../assets/img/flags/italy.svg';
 
+// const fetch_function = (from_date,to_date) => {
+//     fetch('http://127.0.0.1:5000?/from_date='+from_date+'to_date='+to_date)
+//         .then(res => res.json())
+//         .then(data => {
+//             console.log(data);
+//             return data;
+//         })
+// }
+
+// const grants = fetch_function(from_date,to_date);
 
 const grants = [
     { id: 1, appReceived: 3397, appAllocated: 3356, casesClose: 2608, casesOpen: 789, casesApproved: 2383, grantsName: "Addendum" },
