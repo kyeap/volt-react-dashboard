@@ -47,19 +47,19 @@ export default (props) => {
           </Card.Body>
         </Card>
       ) : (
-          <Card className="theme-settings theme-settings-expand" onClick={() => { toggleSettings(true) }}>
-            <Card.Body className="p-3 py-2">
-              <span className="fw-bold h6"><FontAwesomeIcon icon={faCogs} className="me-1 fs-7" /> Settings</span>
-            </Card.Body>
-          </Card>
-        )}
+        <Card className="theme-settings theme-settings-expand" onClick={() => { toggleSettings(true) }}>
+          <Card.Body className="p-3 py-2">
+            <span className="fw-bold h6"><FontAwesomeIcon icon={faCogs} className="me-1 fs-7" /> Settings</span>
+          </Card.Body>
+        </Card>
+      )}
       <footer className="footer section py-5">
         <Row>
           <Col xs={12} lg={6} className="mb-4 mb-lg-0">
             <p className="mb-0 text-center text-xl-left">
               Copyright © 2019-{`${currentYear} `}
               <Card.Link href="https://themesberg.com" target="_blank" className="text-blue text-decoration-none fw-normal">
-                Themesberg
+                NCC
             </Card.Link>
             </p>
           </Col>
