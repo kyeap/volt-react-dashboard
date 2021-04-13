@@ -1,41 +1,39 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCashRegister, faChartLine, faCloudUploadAlt, faPlus, faRocket, faTasks, faUserShield } from '@fortawesome/free-solid-svg-icons';
+import { faCashRegister, faChartLine, faTasks } from '@fortawesome/free-solid-svg-icons';
 import { Col, Row, Button, Dropdown, ButtonGroup } from '@themesberg/react-bootstrap';
 
 import { CounterWidget, CircleChartWidget, BarChartWidget, TeamMembersWidget, ProgressTrackWidget, RankingWidget, SalesValueWidget, SalesValueWidgetPhone, AcquisitionWidget } from "../../components/Widgets";
 import { PageVisitsTable } from "../../components/Tables";
 import { trafficShares, totalOrders } from "../../data/charts";
 
+import { grants } from "../../data/tables";
+
 export default () => {
+  const [totalPayment, setTotalPayment] = useState('2875826');
+
+  const getTotalPayment = (id) => {
+    setTotalPayment(id);
+  };
+
   return (
     <>
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
-        {/* <Dropdown className="btn-toolbar">
+        <Dropdown className="btn-toolbar">
           <Dropdown.Toggle as={Button} variant="primary" size="sm" className="me-2">
-            <FontAwesomeIcon icon={faPlus} className="me-2" />New Task
+            <FontAwesomeIcon icon={faTasks} className="me-2" />Grants
           </Dropdown.Toggle>
           <Dropdown.Menu className="dashboard-dropdown dropdown-menu-left mt-2">
-            <Dropdown.Item className="fw-bold">
-              <FontAwesomeIcon icon={faTasks} className="me-2" /> New Task
-            </Dropdown.Item>
-            <Dropdown.Item className="fw-bold">
-              <FontAwesomeIcon icon={faCloudUploadAlt} className="me-2" /> Upload Files
-            </Dropdown.Item>
-            <Dropdown.Item className="fw-bold">
-              <FontAwesomeIcon icon={faUserShield} className="me-2" /> Preview Security
-            </Dropdown.Item>
-
-            <Dropdown.Divider />
-
-            <Dropdown.Item className="fw-bold">
-              <FontAwesomeIcon icon={faRocket} className="text-danger me-2" /> Upgrade to Pro
-            </Dropdown.Item>
+            {grants.map(grant => {
+              return (
+                <Dropdown.Item className="fw-bold" onClick={() => getTotalPayment(grant.id)}>{grant.grantsName}</Dropdown.Item>
+              )
+            })}
           </Dropdown.Menu>
         </Dropdown>
 
-        <ButtonGroup>
+        {/* <ButtonGroup>
           <Button variant="outline-primary" size="sm">Share</Button>
           <Button variant="outline-primary" size="sm">Export</Button>
         </ButtonGroup> */}
@@ -59,7 +57,7 @@ export default () => {
         <Col xs={12} sm={6} xl={4} className="mb-4">
           <CounterWidget
             category="Number of grants handled"
-            title="20"
+            title={grants.length}
             period="Feb 1 2020- Apr 1 2022"
             percentage={18.2}
             icon={faChartLine}
@@ -70,7 +68,7 @@ export default () => {
         <Col xs={12} sm={6} xl={4} className="mb-4">
           <CounterWidget
             category="Total Payments Made"
-            title="£2875826"
+            title={"£" + totalPayment}
             period="Feb 1 2022- Apr 1 2022"
             percentage={28.4}
             icon={faCashRegister}
