@@ -188,45 +188,49 @@ export const RankingTable = () => {
   );
 };
 
-export const TransactionsTable = () => {
+export const TransactionsTable = (props) => {
+  const { search } = props;
+  console.log(search);
   const totalTransactions = transactions.length;
+  const filtered = grants.map(grantObj => Object.values(grantObj).some(grant => String(grant).toLowerCase().includes(search.toLowerCase())) ? grantObj : null).filter(nullObj => nullObj != null);
 
   const TableRow = (props) => {
-    const { invoiceNumber, subscription, price, issueDate, dueDate, status } = props;
-    const statusVariant = status === "Paid" ? "success"
-      : status === "Due" ? "warning"
-        : status === "Canceled" ? "danger" : "primary";
-
+    const { id, grantsName, appReceived, appAllocated, casesClose, casesOpen, casesApproved } = props;
     return (
       <tr>
         <td>
+          <span className="fw-normal">
+            {id}
+          </span>
+        </td>
+        <td>
           <Card.Link as={Link} to={Routes.Invoice.path} className="fw-normal">
-            {invoiceNumber}
+            {grantsName}
           </Card.Link>
         </td>
         <td>
           <span className="fw-normal">
-            {subscription}
+            {appReceived}
           </span>
         </td>
         <td>
           <span className="fw-normal">
-            {issueDate}
+            {appAllocated}
           </span>
         </td>
         <td>
           <span className="fw-normal">
-            {dueDate}
+            {casesClose}
           </span>
         </td>
         <td>
           <span className="fw-normal">
-            ${parseFloat(price).toFixed(2)}
+            {casesOpen}
           </span>
         </td>
         <td>
-          <span className={`fw-normal text-${statusVariant}`}>
-            {status}
+          <span className="fw-normal">
+            {casesApproved}
           </span>
         </td>
         <td>
@@ -260,16 +264,19 @@ export const TransactionsTable = () => {
           <thead>
             <tr>
               <th className="border-bottom">#</th>
-              <th className="border-bottom">Bill For</th>
-              <th className="border-bottom">Issue Date</th>
-              <th className="border-bottom">Due Date</th>
-              <th className="border-bottom">Total</th>
-              <th className="border-bottom">Status</th>
+              <th className="border-bottom">Grant name</th>
+              <th className="border-bottom">Received</th>
+              <th className="border-bottom">Allocated</th>
+              <th className="border-bottom">closed</th>
+              <th className="border-bottom">Open</th>
+              <th className="border-bottom">Approved</th>
               <th className="border-bottom">Action</th>
             </tr>
           </thead>
           <tbody>
-            {transactions.map(t => <TableRow key={`transaction-${t.invoiceNumber}`} {...t} />)}
+            {
+              filtered.length > 0 && filtered.map(grant => <TableRow key={`grants-${grant.id}`} {...grant} />)
+            }
           </tbody>
         </Table>
         <Card.Footer className="px-3 border-0 d-lg-flex align-items-center justify-content-between">
