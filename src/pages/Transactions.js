@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faCog, faHome, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { Col, Row, Form, Button, ButtonGroup, Breadcrumb, InputGroup, Dropdown } from '@themesberg/react-bootstrap';
@@ -6,6 +6,7 @@ import { Col, Row, Form, Button, ButtonGroup, Breadcrumb, InputGroup, Dropdown }
 import { TransactionsTable } from "../components/Tables";
 
 export default () => {
+  const [search, setSearch] = useState("");
   return (
     <>
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
@@ -16,7 +17,7 @@ export default () => {
             <Breadcrumb.Item active>Transactions</Breadcrumb.Item>
           </Breadcrumb>
           <h4>Transactions</h4>
-          <p className="mb-0">Your web analytics dashboard template.</p>
+          <p className="mb-0">Here are the list of all the grants and their current status.</p>
         </div>
         <div className="btn-toolbar mb-2 mb-md-0">
           <ButtonGroup>
@@ -33,10 +34,10 @@ export default () => {
               <InputGroup.Text>
                 <FontAwesomeIcon icon={faSearch} />
               </InputGroup.Text>
-              <Form.Control type="text" placeholder="Search" />
+              <Form.Control type="text" placeholder="Search" onChange={e => setSearch(e.target.value)} />
             </InputGroup>
           </Col>
-          <Col xs={4} md={2} xl={1} className="ps-md-0 text-end">
+          {/* <Col xs={4} md={2} xl={1} className="ps-md-0 text-end">
             <Dropdown as={ButtonGroup}>
               <Dropdown.Toggle split as={Button} variant="link" className="text-dark m-0 p-0">
                 <span className="icon icon-sm icon-gray">
@@ -52,11 +53,11 @@ export default () => {
                 <Dropdown.Item className="fw-bold">30</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
-          </Col>
+          </Col> */}
         </Row>
       </div>
 
-      <TransactionsTable />
+      <TransactionsTable search={search} />
     </>
   );
 };
