@@ -3,12 +3,19 @@ import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faAngleUp, faArrowDown, faArrowUp, faEdit, faEllipsisH, faExternalLinkAlt, faEye, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { Col, Row, Nav, Card, Image, Button, Table, Dropdown, ProgressBar, Pagination, ButtonGroup } from '@themesberg/react-bootstrap';
-import { Link } from 'react-router-dom';
 
-import { Routes } from "../routes";
-import { grants, pageTraffic, pageRanking } from "../data/tables";
+import { pageTraffic, pageRanking } from "../data/tables";
 import transactions from "../data/transactions";
 import commands from "../data/commands";
+
+import { useHistory } from "react-router-dom";
+import { Link } from 'react-router-dom';
+import { Routes } from "../routes";
+
+//styling 
+const leftAlign = {
+  textAlign: 'right'
+}
 
 const ValueChange = ({ value, suffix }) => {
   const valueIcon = value < 0 ? faAngleDown : faAngleUp;
@@ -24,18 +31,46 @@ const ValueChange = ({ value, suffix }) => {
   );
 };
 
-export const PageVisitsTable = () => {
-  const TableRow = (props) => {
-    const { grantsName, appReceived, appAllocated, casesClose, casesOpen, casesApproved } = props;
+export const PageVisitsTable = (props) => {
+  const history = useHistory(); // in function
+  const {grantData, search} = props;
+  const filtered = grantData.map(grantObj => Object.values(grantObj).some(grant => String(grant).toLowerCase().includes(search.toLowerCase())) ? grantObj : null).filter(nullObj => nullObj != null);
 
+  const TableRow = (props) => {
+    const { id, Grant_Name, Grant_Status, no_applications_closed, no_applications_open, no_applications_received, no_of_applications_allocated, 
+      no_of_cases_approved, no_of_cases_awaiting_payment, no_of_cases_declined, no_of_cases_exceptions,no_of_cases_paid, payments_made } = props;
+    console.log(payments_made,props);
     return (
       <tr>
-        <th scope="row">{grantsName}</th>
-        <td>{appReceived}</td>
-        <td>{appAllocated}</td>
-        <td>{casesClose}</td>
-        <td>{casesOpen}</td>
-        <td>{casesApproved}</td>
+        <th scope="row">{Grant_Name}</th>
+        <td style={leftAlign}>{no_applications_received}</td>
+        <td style={leftAlign}>{no_of_applications_allocated}</td>
+        <td style={leftAlign}>{no_applications_closed}</td>
+        <td style={leftAlign}>{no_applications_open}</td>
+        <td style={leftAlign}>{no_of_cases_approved}</td>
+        <td style={leftAlign}>{no_of_cases_awaiting_payment}</td>
+        <td style={leftAlign}>{no_of_cases_declined}</td>
+        <td style={leftAlign}>{no_of_cases_exceptions}</td>
+        <td style={leftAlign}>{no_of_cases_paid}</td>
+        <td style={leftAlign}>{"£"+payments_made.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
+        <td style={leftAlign}>
+          <button  onClick={() =>history.push({ pathname: Routes.Settings.path, state: props })}> 
+            View 
+          </button>
+          {/* <Link to={Routes.Settings.path}>View</Link>  */}
+          {/* <Dropdown as={ButtonGroup}>
+            <Dropdown.Toggle as={Button} split variant="link" className="text-dark m-0 p-0">
+              <span className="icon icon-sm">
+                <FontAwesomeIcon icon={faEllipsisH} className="icon-dark" />
+              </span>
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={console.log("view")}>
+                <FontAwesomeIcon icon={faEye} className="me-2" /> View Details
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown> */}
+        </td>
       </tr>
     );
   };
@@ -47,26 +82,32 @@ export const PageVisitsTable = () => {
           <Col>
             <h5>Grants</h5>
           </Col>
-          <Col className="text-end">
+          {/* <Col className="text-end">
             <Button variant="secondary" size="sm">
               <Link to={Routes.Transactions.path}> See all </Link>
             </Button>
-          </Col>
+          </Col> */}
         </Row>
       </Card.Header>
       <Table responsive className="align-items-center table-flush">
         <thead className="thead-light">
           <tr>
             <th scope="col">Grant name</th>
-            <th scope="col">Received</th>
-            <th scope="col">Allocated</th>
-            <th scope="col">closed</th>
-            <th scope="col">Open</th>
-            <th scope="col">Approved</th>
+            <th style={leftAlign} scope="col">Received</th>
+            <th style={leftAlign} scope="col">Allocated</th>
+            <th style={leftAlign} scope="col">closed</th>
+            <th style={leftAlign} scope="col">Open</th>
+            <th style={leftAlign} scope="col">Approved</th>
+            <th style={leftAlign} scope="col">Awaiting Payment</th>
+            <th style={leftAlign} scope="col">Declined</th>
+            <th style={leftAlign} scope="col">Exceptions</th>
+            <th style={leftAlign} scope="col">Paid</th>
+            <th style={leftAlign} scope="col">Payment Made</th>
+            <th style={leftAlign} scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
-          {grants.map(pv => <TableRow key={`page-visit-${pv.id}`} {...pv} />)}
+          {filtered.map(pv => <TableRow key={`page-visit-${pv.id}`} {...pv} />)}
         </tbody>
       </Table>
     </Card>
@@ -189,13 +230,17 @@ export const RankingTable = () => {
 };
 
 export const TransactionsTable = (props) => {
-  const { search } = props;
-  console.log(search);
+  const { search, grantData } = props;
+  console.log('in child');
+  console.log(grantData);
   const totalTransactions = transactions.length;
-  const filtered = grants.map(grantObj => Object.values(grantObj).some(grant => String(grant).toLowerCase().includes(search.toLowerCase())) ? grantObj : null).filter(nullObj => nullObj != null);
+  const filtered = grantData.map(grantObj => Object.values(grantObj).some(grant => String(grant).toLowerCase().includes(search.toLowerCase())) ? grantObj : null).filter(nullObj => nullObj != null);
+  console.log(filtered.map(grant => console.log(grant.id)));
 
   const TableRow = (props) => {
-    const { id, grantsName, appReceived, appAllocated, casesClose, casesOpen, casesApproved } = props;
+    const { id, Grant_Name, Grant_Status, no_applications_closed, no_applications_open, no_applications_received, no_of_applications_allocated, 
+      no_of_cases_approved, no_of_cases_awaiting_payment, no_of_cases_declined, no_of_cases_exceptions,no_of_cases_paid, payments_made } = props;
+      
     return (
       <tr>
         <td>
@@ -205,32 +250,57 @@ export const TransactionsTable = (props) => {
         </td>
         <td>
           <Card.Link as={Link} to={Routes.Invoice.path} className="fw-normal">
-            {grantsName}
+            {Grant_Name}
           </Card.Link>
         </td>
         <td>
           <span className="fw-normal">
-            {appReceived}
+            {no_applications_received}
           </span>
         </td>
         <td>
           <span className="fw-normal">
-            {appAllocated}
+            {no_of_applications_allocated}
           </span>
         </td>
         <td>
           <span className="fw-normal">
-            {casesClose}
+            {no_applications_closed}
           </span>
         </td>
         <td>
           <span className="fw-normal">
-            {casesOpen}
+            {no_applications_open}
           </span>
         </td>
         <td>
           <span className="fw-normal">
-            {casesApproved}
+            {no_of_cases_approved}
+          </span>
+        </td>
+        <td>
+          <span className="fw-normal">
+            {no_of_cases_awaiting_payment}
+          </span>
+        </td>
+        <td>
+          <span className="fw-normal">
+            {no_of_cases_declined}
+          </span>
+        </td>
+        <td>
+          <span className="fw-normal">
+            {no_of_cases_exceptions}
+          </span>
+        </td>
+        <td>
+          <span className="fw-normal">
+            {no_of_cases_paid}
+          </span>
+        </td>
+        <td>
+          <span className="fw-normal">
+            {payments_made}
           </span>
         </td>
         <td>
@@ -275,7 +345,8 @@ export const TransactionsTable = (props) => {
           </thead>
           <tbody>
             {
-              filtered.length > 0 && filtered.map(grant => <TableRow key={`grants-${grant.id}`} {...grant} />)
+              filtered.length > 0 && filtered.map(grant => 
+                <TableRow key={`grants-${grant.id}`} {...grant} />)
             }
           </tbody>
         </Table>
