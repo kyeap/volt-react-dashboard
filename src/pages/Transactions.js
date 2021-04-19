@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faCog, faHome, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { Col, Row, Form, Button, ButtonGroup, Breadcrumb, InputGroup, Dropdown } from '@themesberg/react-bootstrap';
@@ -7,6 +7,23 @@ import { TransactionsTable } from "../components/Tables";
 
 export default () => {
   const [search, setSearch] = useState("");
+  const [startDate, setStartDate] = useState(new Date(2021,0,1)); //always start 1 Jan 2021
+  const [endDate, setEndDate] = useState(new Date());
+  const [grantData, setGrantData] = useState([]);
+
+  useEffect(() => {
+    const startDateStr = startDate.getDate()+"-"+String(Number(startDate.getMonth()) + 1) + "-" +startDate.getFullYear(); 
+    const endDateStr = endDate.getDate()+"-"+String(Number(endDate.getMonth()) + 1) + "-" +endDate.getFullYear(); 
+    fetch(`http://127.0.0.1:5000/?from_date=${startDateStr}&to_date=${endDateStr}`)
+      .then(res => res.json())
+      .then(res => {
+        console.log(res.data);
+        // setGrantData([{id:0},{id:1}]);
+        setGrantData(res.data);
+      })
+      .catch(error => setGrantData(error))
+  },[]);
+
   return (
     <>
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
@@ -57,7 +74,10 @@ export default () => {
         </Row>
       </div>
 
-      <TransactionsTable search={search} />
+      <TransactionsTable 
+        search={search}
+        grantData={grantData}
+       />
     </>
   );
 };
