@@ -1,21 +1,79 @@
 
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCashRegister, faChartLine, faTasks } from '@fortawesome/free-solid-svg-icons';
-import { Col, Row, Button, Dropdown, ButtonGroup } from '@themesberg/react-bootstrap';
+import { faCashRegister, faChartLine, faTasks, faSearch, faCalendarAlt, faListOl, faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
+import { Col, Row, Button, Dropdown, ButtonGrou, InputGroup, Form } from '@themesberg/react-bootstrap';
+import { DateRangePicker } from 'react-dates';
+import DatePicker from "react-datepicker";
+
+import Datetime from "react-datetime";
 
 import { CounterWidget, CircleChartWidget, BarChartWidget, TeamMembersWidget, ProgressTrackWidget, RankingWidget, SalesValueWidget, SalesValueWidgetPhone, AcquisitionWidget } from "../../components/Widgets";
 import { PageVisitsTable } from "../../components/Tables";
 import { trafficShares, totalOrders } from "../../data/charts";
 
-import { grants } from "../../data/tables";
+// import { grants, grant } from "../../data/tables";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 export default () => {
-  const [totalPayment, setTotalPayment] = useState('2875826');
-
+  const [loading,setLoading] = useState(true)
+  const [totalPayment, setTotalPayment] = useState(0);
+  const [totalClose, setTotalClose] = useState(0);
+  const [totalOpen, setTotalOpen] = useState(0);
+  const [casesPaid, setCasesPaid] = useState(0);
+  const [casesPendingPayment,setCasesPendingPayment ] = useState(0);
+  // const [date, setDate] = useState('');
+  const [startDate, setStartDate] = useState(new Date(2021,0,1)); //always start 1 Jan 2021
+  const [birthday, setBirthday] = useState("");
+  const [endDate, setEndDate] = useState(new Date());
+  const [grantData, setGrantData] = useState([]);
+  const [search, setSearch] = useState("");
   const getTotalPayment = (id) => {
     setTotalPayment(id);
   };
+
+  useEffect(() => {
+    console.log("loading:"+loading);
+    setLoading(()=>true);
+    const startDateStr = startDate.getDate()+"-"+String(Number(startDate.getMonth()) + 1) + "-" +startDate.getFullYear(); 
+    const endDateStr = endDate.getDate()+"-"+String(Number(endDate.getMonth()) + 1) + "-" +endDate.getFullYear(); 
+    fetch(`http://127.0.0.1:5000/?from_date=${startDateStr}&to_date=${endDateStr}`)
+      .then(res => res.json())
+      .then(res => {
+        setGrantData(res.data);
+        let paymentSUM = 0;
+        let openSum = 0; 
+        let closeSum = 0;
+        let paidCaseSum = 0;
+        let PendingPayment = 0;
+
+        for (let i = 0; i < res.data.length; i++){
+          console.log(res.data[i].payments_made);
+          console.log(totalPayment);
+          paymentSUM = paymentSUM+res.data[i].payments_made;
+          openSum = openSum+res.data[i].no_applications_closed;
+          closeSum = closeSum+res.data[i].no_applications_open;
+          paidCaseSum = paidCaseSum+res.data[i].no_of_cases_paid;
+          PendingPayment = PendingPayment+res.data[i].no_of_cases_awaiting_payment;
+        }
+        setTotalPayment(paymentSUM.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        setTotalClose(openSum);
+        setTotalOpen(closeSum);
+        setCasesPaid(paidCaseSum);
+        setCasesPendingPayment(PendingPayment)
+        
+        // setTotalPayment(res.data.reduce((totalpayment,grant) => {
+        //   console.log(grant.payments_made);
+        //   return (totalpayment+grant.payments_made);
+        // },0));
+      })
+      .catch(error => setGrantData(error))
+      .finally(() => setLoading(false))
+      
+  },[startDate,endDate]);
+
+  // console.log(totalPayment);
 
   return (
     <>
@@ -25,11 +83,11 @@ export default () => {
             <FontAwesomeIcon icon={faTasks} className="me-2" />Grants
           </Dropdown.Toggle>
           <Dropdown.Menu className="dashboard-dropdown dropdown-menu-left mt-2">
-            {grants.map(grant => {
-              return (
-                <Dropdown.Item className="fw-bold" onClick={() => getTotalPayment(grant.id)}>{grant.grantsName}</Dropdown.Item>
-              )
-            })}
+            {grantData.map(grant => {
+                return (
+                  <Dropdown.Item key={grant.id} className="fw-bold" onClick={() => getTotalPayment(grant.id)}>{grant.Grant_Name}</Dropdown.Item>
+                )
+              })}
           </Dropdown.Menu>
         </Dropdown>
 
@@ -56,12 +114,56 @@ export default () => {
         </Col> */}
         <Col xs={12} sm={6} xl={4} className="mb-4">
           <CounterWidget
-            category="Number of grants handled"
-            title={grants.length}
+            category="Number of grants"
+            title={grantData.length}
             period="Feb 1 2020- Apr 1 2022"
             percentage={18.2}
             icon={faChartLine}
             iconColor="shape-secondary"
+          />
+        </Col>
+
+        <Col xs={12} sm={6} xl={4} className="mb-4">
+          <CounterWidget
+            category="Total Grant Closed"
+            title={totalClose}
+            period="Feb 1 2022- Apr 1 2022"
+            percentage={28.4}
+            icon={faClipboardCheck}
+            iconColor="shape-tertiary"
+          />
+        </Col>
+
+        <Col xs={12} sm={6} xl={4} className="mb-4">
+          <CounterWidget
+            category="Total Grants Open"
+            title={totalOpen}
+            period="Feb 1 2022- Apr 1 2022"
+            percentage={28.4}
+            icon={faListOl}
+            iconColor="shape-tertiary"
+          />
+        </Col>
+
+        <Col xs={12} sm={6} xl={4} className="mb-4">
+          <CounterWidget
+            category="Total Cases Paid"
+            title={casesPaid}
+            period="Feb 1 2022- Apr 1 2022"
+            percentage={28.4}
+            icon={faCashRegister}
+            iconColor="shape-tertiary"
+          />
+        </Col>
+
+        <Col xs={12} sm={6} xl={4} className="mb-4">
+          <CounterWidget
+            category="No. of Payments Pending"
+            title={casesPendingPayment}
+            period="Feb 1 2022- Apr 1 2022"
+            percentage={28.4}
+            icon={faListOl}
+            iconColor="shape-tertiary"
           />
         </Col>
 
@@ -76,20 +178,69 @@ export default () => {
           />
         </Col>
 
-        <Col xs={12} sm={6} xl={4} className="mb-4">
+        {/* <Col xs={12} sm={6} xl={4} className="mb-4">
           <CircleChartWidget
             title="Types of buisnesses applied"
             data={trafficShares} />
+        </Col> */}
+      </Row>
+      <Row>
+        <Col xs={8} md={6} lg={3} xl={4}>
+          <InputGroup>
+            <InputGroup.Text>
+              <FontAwesomeIcon icon={faSearch} />
+            </InputGroup.Text>
+            <Form.Control type="text" placeholder="Search" onChange={e => setSearch(e.target.value)} />
+          </InputGroup>
+        </Col>
+        <Col xs={12} sm={1} xl={2} className="mb-4">
+          <DatePicker 
+            dateFormat="dd/MM/yyyy"
+            selected={startDate} 
+            onChange={date => setStartDate(date)} />
+        </Col>
+        <Col xs={12} sm={1} xl={2} className="mb-4">
+          <DatePicker 
+            dateFormat="dd/MM/yyyy"
+            selected={endDate} 
+            onChange={date => setEndDate(date)} />
         </Col>
       </Row>
-
+      {/* <Row>
+        <Col md={6} className="mb-3">
+          <Form.Group id="birthday">
+            <Form.Label>Birthday</Form.Label>
+            <Datetime
+              timeFormat={false}
+              onChange={setBirthday}
+              renderInput={(props, openCalendar) => (
+                <InputGroup>
+                  <InputGroup.Text><FontAwesomeIcon icon={faCalendarAlt} /></InputGroup.Text>
+                  <Form.Control
+                    required
+                    type="text"
+                    value={birthday ? birthday : ""}
+                    placeholder="mm/dd/yyyy"
+                    onFocus={openCalendar}
+                    onChange={() => { }} />
+                </InputGroup>
+              )} />
+          </Form.Group>
+        </Col>
+      </Row> */}
       <Row>
         <Col xs={12} xl={12} className="mb-4">
           <Row>
             <Col xs={12} xl={12} className="mb-4">
               <Row>
                 <Col xs={12} className="mb-4">
-                  <PageVisitsTable />
+                  {
+                    loading? <div>Loading...</div>: <PageVisitsTable
+                      search={search} 
+                      grantData = {grantData}
+                    />
+                  }
+       
                 </Col>
 
                 {/* <Col xs={12} lg={6} className="mb-4">
