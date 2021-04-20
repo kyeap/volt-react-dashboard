@@ -31,9 +31,9 @@ const ValueChange = ({ value, suffix }) => {
   );
 };
 
-export const PageVisitsTable = (props) => {
+export const OverviewTable = (props) => {
   const history = useHistory(); // in function
-  const {grantData, search} = props;
+  const {grantData, search, modelToggle} = props;
   const filtered = grantData.map(grantObj => Object.values(grantObj).some(grant => String(grant).toLowerCase().includes(search.toLowerCase())) ? grantObj : null).filter(nullObj => nullObj != null);
 
   const TableRow = (props) => {
@@ -43,33 +43,39 @@ export const PageVisitsTable = (props) => {
     return (
       <tr>
         <th scope="row">{Grant_Name}</th>
-        <td style={leftAlign}>{no_applications_received}</td>
-        <td style={leftAlign}>{no_of_applications_allocated}</td>
-        <td style={leftAlign}>{no_applications_closed}</td>
-        <td style={leftAlign}>{no_applications_open}</td>
-        <td style={leftAlign}>{no_of_cases_approved}</td>
-        <td style={leftAlign}>{no_of_cases_awaiting_payment}</td>
-        <td style={leftAlign}>{no_of_cases_declined}</td>
-        <td style={leftAlign}>{no_of_cases_exceptions}</td>
-        <td style={leftAlign}>{no_of_cases_paid}</td>
+        <td style={leftAlign}>{no_applications_received == null ? 0 : no_applications_received.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
+        <td style={leftAlign}>{no_of_applications_allocated == null ? 0: no_of_applications_allocated.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
+        <td style={leftAlign}>{no_applications_closed == null ? 0: no_applications_closed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
+        <td style={leftAlign}>{no_applications_open == null ? 0 : no_applications_open.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
+        <td style={leftAlign}>{no_of_cases_approved == null ? 0: no_of_cases_approved.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
+        <td style={leftAlign}>{no_of_cases_awaiting_payment == null ? 0: no_of_cases_awaiting_payment.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
+        <td style={leftAlign}>{no_of_cases_declined == null ? 0: no_of_cases_declined.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
+        <td style={leftAlign}>{no_of_cases_exceptions == null ? 0: no_of_cases_exceptions.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
+        <td style={leftAlign}>{no_of_cases_paid == null ? 0: no_of_cases_paid.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
         <td style={leftAlign}>{"£"+payments_made.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
         <td style={leftAlign}>
-          <button  onClick={() =>history.push({ pathname: Routes.Settings.path, state: props })}> 
+          {/* <button  onClick={() =>history.push({ pathname: Routes.Settings.path, state: props })}> 
             View 
-          </button>
+          </button> */}
           {/* <Link to={Routes.Settings.path}>View</Link>  */}
-          {/* <Dropdown as={ButtonGroup}>
+          <Dropdown as={ButtonGroup}>
             <Dropdown.Toggle as={Button} split variant="link" className="text-dark m-0 p-0">
               <span className="icon icon-sm">
                 <FontAwesomeIcon icon={faEllipsisH} className="icon-dark" />
               </span>
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item onClick={console.log("view")}>
-                <FontAwesomeIcon icon={faEye} className="me-2" /> View Details
+              <Dropdown.Item onClick={() =>history.push({ pathname: Routes.Settings.path, state: props })}>
+                <FontAwesomeIcon icon={faEye} className="me-2" /> View Grant Details
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => modelToggle()}>
+                <FontAwesomeIcon icon={faEye} className="me-2" /> View Rejection
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => {console.log('clicked')}}>
+                <FontAwesomeIcon icon={faEye} className="me-2" /> View Others..
               </Dropdown.Item>
             </Dropdown.Menu>
-          </Dropdown> */}
+          </Dropdown>
         </td>
       </tr>
     );

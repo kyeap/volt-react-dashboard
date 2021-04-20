@@ -3,13 +3,12 @@ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCashRegister, faChartLine, faTasks, faSearch, faCalendarAlt, faListOl, faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
 import { Col, Row, Button, Dropdown, ButtonGrou, InputGroup, Form } from '@themesberg/react-bootstrap';
-import { DateRangePicker } from 'react-dates';
 import DatePicker from "react-datepicker";
 
-import Datetime from "react-datetime";
+import Modal from "../components/modal.js";
 
 import { CounterWidget, CircleChartWidget, BarChartWidget, TeamMembersWidget, ProgressTrackWidget, RankingWidget, SalesValueWidget, SalesValueWidgetPhone, AcquisitionWidget } from "../../components/Widgets";
-import { PageVisitsTable } from "../../components/Tables";
+import { OverviewTable } from "../../components/Tables";
 import { trafficShares, totalOrders } from "../../data/charts";
 
 // import { grants, grant } from "../../data/tables";
@@ -17,6 +16,7 @@ import { trafficShares, totalOrders } from "../../data/charts";
 import "react-datepicker/dist/react-datepicker.css";
 
 export default () => {
+  
   const [loading,setLoading] = useState(true)
   const [totalPayment, setTotalPayment] = useState(0);
   const [totalClose, setTotalClose] = useState(0);
@@ -32,6 +32,11 @@ export default () => {
   const getTotalPayment = (id) => {
     setTotalPayment(id);
   };
+  const [modalShow, setModalShow] = React.useState(false);
+
+  const modelToggle = () => {
+    setModalShow(!modalShow);
+  } 
 
   useEffect(() => {
     console.log("loading:"+loading);
@@ -58,10 +63,10 @@ export default () => {
           PendingPayment = PendingPayment+res.data[i].no_of_cases_awaiting_payment;
         }
         setTotalPayment(paymentSUM.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-        setTotalClose(openSum);
-        setTotalOpen(closeSum);
-        setCasesPaid(paidCaseSum);
-        setCasesPendingPayment(PendingPayment)
+        setTotalClose(openSum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        setTotalOpen(closeSum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        setCasesPaid(paidCaseSum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        setCasesPendingPayment(PendingPayment.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","))
         
         // setTotalPayment(res.data.reduce((totalpayment,grant) => {
         //   console.log(grant.payments_made);
@@ -73,10 +78,13 @@ export default () => {
       
   },[startDate,endDate]);
 
-  // console.log(totalPayment);
 
   return (
     <>
+      <Modal
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+      />
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
         <Dropdown className="btn-toolbar">
           <Dropdown.Toggle as={Button} variant="primary" size="sm" className="me-2">
@@ -98,6 +106,7 @@ export default () => {
       </div>
 
       <Row className="justify-content-md-center">
+        {/* graph */}
         {/* <Col xs={12} className="mb-4 d-none d-sm-block">
           <SalesValueWidget
             title="Totsl Payments Made"
@@ -235,7 +244,8 @@ export default () => {
               <Row>
                 <Col xs={12} className="mb-4">
                   {
-                    loading? <div>Loading...</div>: <PageVisitsTable
+                    loading? <div>Loading...</div>: <OverviewTable
+                      modelToggle = {modelToggle}
                       search={search} 
                       grantData = {grantData}
                     />
