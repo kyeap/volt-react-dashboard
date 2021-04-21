@@ -42,6 +42,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 export default () => {
   const [loading, setLoading] = useState(true);
+  const [connected, setConnected] = useState(true);
   const [totalPayment, setTotalPayment] = useState(0);
   const [totalClose, setTotalClose] = useState(0);
   const [totalOpen, setTotalOpen] = useState(0);
@@ -81,6 +82,7 @@ export default () => {
     )
       .then((res) => res.json())
       .then((res) => {
+        setConnected(true);
         setGrantData(res.data);
         let paymentSUM = 0;
         let openSum = 0;
@@ -118,10 +120,17 @@ export default () => {
         //   return (totalpayment+grant.payments_made);
         // },0));
       })
-      .catch((error) => setGrantData(error))
+      .catch((error) => setConnected(false))
       .finally(() => setLoading(false));
   }, [startDate, endDate]);
 
+  if (!connected) {
+    return (
+      <>
+        <div>We are having trouble connecting to the API.</div>
+      </>
+    );
+  }
   return (
     <>
       <Modal show={modalShow} onHide={() => setModalShow(false)} />
