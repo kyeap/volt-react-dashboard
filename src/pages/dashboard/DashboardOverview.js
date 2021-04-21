@@ -1,13 +1,38 @@
-
 import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCashRegister, faChartLine, faTasks, faSearch, faCalendarAlt, faListOl, faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
-import { Col, Row, Button, Dropdown, ButtonGrou, InputGroup, Form } from '@themesberg/react-bootstrap';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCashRegister,
+  faChartLine,
+  faTasks,
+  faSearch,
+  faCalendarAlt,
+  faListOl,
+  faClipboardCheck,
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  Col,
+  Row,
+  Button,
+  Dropdown,
+  ButtonGrou,
+  InputGroup,
+  Form,
+} from "@themesberg/react-bootstrap";
 import DatePicker from "react-datepicker";
 
 import Modal from "../components/modal.js";
 
-import { CounterWidget, CircleChartWidget, BarChartWidget, TeamMembersWidget, ProgressTrackWidget, RankingWidget, SalesValueWidget, SalesValueWidgetPhone, AcquisitionWidget } from "../../components/Widgets";
+import {
+  CounterWidget,
+  CircleChartWidget,
+  BarChartWidget,
+  TeamMembersWidget,
+  ProgressTrackWidget,
+  RankingWidget,
+  SalesValueWidget,
+  SalesValueWidgetPhone,
+  AcquisitionWidget,
+} from "../../components/Widgets";
 import { OverviewTable } from "../../components/Tables";
 import { trafficShares, totalOrders } from "../../data/charts";
 
@@ -16,15 +41,14 @@ import { trafficShares, totalOrders } from "../../data/charts";
 import "react-datepicker/dist/react-datepicker.css";
 
 export default () => {
-  
-  const [loading,setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
   const [totalPayment, setTotalPayment] = useState(0);
   const [totalClose, setTotalClose] = useState(0);
   const [totalOpen, setTotalOpen] = useState(0);
   const [casesPaid, setCasesPaid] = useState(0);
-  const [casesPendingPayment,setCasesPendingPayment ] = useState(0);
+  const [casesPendingPayment, setCasesPendingPayment] = useState(0);
   // const [date, setDate] = useState('');
-  const [startDate, setStartDate] = useState(new Date(2021,0,1)); //always start 1 Jan 2021
+  const [startDate, setStartDate] = useState(new Date(2021, 0, 1)); //always start 1 Jan 2021
   const [birthday, setBirthday] = useState("");
   const [endDate, setEndDate] = useState(new Date());
   const [grantData, setGrantData] = useState([]);
@@ -36,66 +60,94 @@ export default () => {
 
   const modelToggle = () => {
     setModalShow(!modalShow);
-  } 
+  };
 
   useEffect(() => {
-    console.log("loading:"+loading);
-    setLoading(()=>true);
-    const startDateStr = startDate.getDate()+"-"+String(Number(startDate.getMonth()) + 1) + "-" +startDate.getFullYear(); 
-    const endDateStr = endDate.getDate()+"-"+String(Number(endDate.getMonth()) + 1) + "-" +endDate.getFullYear(); 
-    fetch(`http://127.0.0.1:5000/?from_date=${startDateStr}&to_date=${endDateStr}`)
-      .then(res => res.json())
-      .then(res => {
+    setLoading(() => true);
+    const startDateStr =
+      startDate.getDate() +
+      "-" +
+      String(Number(startDate.getMonth()) + 1) +
+      "-" +
+      startDate.getFullYear();
+    const endDateStr =
+      endDate.getDate() +
+      "-" +
+      String(Number(endDate.getMonth()) + 1) +
+      "-" +
+      endDate.getFullYear();
+    fetch(
+      `http://127.0.0.1:5000/?from_date=${startDateStr}&to_date=${endDateStr}`
+    )
+      .then((res) => res.json())
+      .then((res) => {
         setGrantData(res.data);
         let paymentSUM = 0;
-        let openSum = 0; 
+        let openSum = 0;
         let closeSum = 0;
         let paidCaseSum = 0;
         let PendingPayment = 0;
 
-        for (let i = 0; i < res.data.length; i++){
+        for (let i = 0; i < res.data.length; i++) {
           console.log(res.data[i].payments_made);
           console.log(totalPayment);
-          paymentSUM = paymentSUM+res.data[i].payments_made;
-          openSum = openSum+res.data[i].no_applications_closed;
-          closeSum = closeSum+res.data[i].no_applications_open;
-          paidCaseSum = paidCaseSum+res.data[i].no_of_cases_paid;
-          PendingPayment = PendingPayment+res.data[i].no_of_cases_awaiting_payment;
+          paymentSUM = paymentSUM + res.data[i].payments_made;
+          openSum = openSum + res.data[i].no_applications_closed;
+          closeSum = closeSum + res.data[i].no_applications_open;
+          paidCaseSum = paidCaseSum + res.data[i].no_of_cases_paid;
+          PendingPayment =
+            PendingPayment + res.data[i].no_of_cases_awaiting_payment;
         }
-        setTotalPayment(paymentSUM.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        setTotalPayment(
+          paymentSUM
+            .toFixed(2)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        );
         setTotalClose(openSum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
         setTotalOpen(closeSum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-        setCasesPaid(paidCaseSum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-        setCasesPendingPayment(PendingPayment.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","))
-        
+        setCasesPaid(
+          paidCaseSum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        );
+        setCasesPendingPayment(
+          PendingPayment.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        );
+
         // setTotalPayment(res.data.reduce((totalpayment,grant) => {
         //   console.log(grant.payments_made);
         //   return (totalpayment+grant.payments_made);
         // },0));
       })
-      .catch(error => setGrantData(error))
-      .finally(() => setLoading(false))
-      
-  },[startDate,endDate]);
-
+      .catch((error) => setGrantData(error))
+      .finally(() => setLoading(false));
+  }, [startDate, endDate]);
 
   return (
     <>
-      <Modal
-          show={modalShow}
-          onHide={() => setModalShow(false)}
-      />
+      <Modal show={modalShow} onHide={() => setModalShow(false)} />
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
         <Dropdown className="btn-toolbar">
-          <Dropdown.Toggle as={Button} variant="primary" size="sm" className="me-2">
-            <FontAwesomeIcon icon={faTasks} className="me-2" />Grants
+          <Dropdown.Toggle
+            as={Button}
+            variant="primary"
+            size="sm"
+            className="me-2"
+          >
+            <FontAwesomeIcon icon={faTasks} className="me-2" />
+            Grants
           </Dropdown.Toggle>
           <Dropdown.Menu className="dashboard-dropdown dropdown-menu-left mt-2">
-            {grantData.map(grant => {
-                return (
-                  <Dropdown.Item key={grant.id} className="fw-bold" onClick={() => getTotalPayment(grant.id)}>{grant.Grant_Name}</Dropdown.Item>
-                )
-              })}
+            {grantData.map((grant) => {
+              return (
+                <Dropdown.Item
+                  key={grant.id}
+                  className="fw-bold"
+                  onClick={() => getTotalPayment(grant.id)}
+                >
+                  {grant.Grant_Name}
+                </Dropdown.Item>
+              );
+            })}
           </Dropdown.Menu>
         </Dropdown>
 
@@ -199,20 +251,26 @@ export default () => {
             <InputGroup.Text>
               <FontAwesomeIcon icon={faSearch} />
             </InputGroup.Text>
-            <Form.Control type="text" placeholder="Search" onChange={e => setSearch(e.target.value)} />
+            <Form.Control
+              type="text"
+              placeholder="Search"
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </InputGroup>
         </Col>
         <Col xs={12} sm={1} xl={2} className="mb-4">
-          <DatePicker 
+          <DatePicker
             dateFormat="dd/MM/yyyy"
-            selected={startDate} 
-            onChange={date => setStartDate(date)} />
+            selected={startDate}
+            onChange={(date) => setStartDate(date)}
+          />
         </Col>
         <Col xs={12} sm={1} xl={2} className="mb-4">
-          <DatePicker 
+          <DatePicker
             dateFormat="dd/MM/yyyy"
-            selected={endDate} 
-            onChange={date => setEndDate(date)} />
+            selected={endDate}
+            onChange={(date) => setEndDate(date)}
+          />
         </Col>
       </Row>
       {/* <Row>
@@ -243,14 +301,15 @@ export default () => {
             <Col xs={12} xl={12} className="mb-4">
               <Row>
                 <Col xs={12} className="mb-4">
-                  {
-                    loading? <div>Loading...</div>: <OverviewTable
-                      modelToggle = {modelToggle}
-                      search={search} 
-                      grantData = {grantData}
+                  {loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <OverviewTable
+                      modelToggle={modelToggle}
+                      search={search}
+                      grantData={grantData}
                     />
-                  }
-       
+                  )}
                 </Col>
 
                 {/* <Col xs={12} lg={6} className="mb-4">
