@@ -1,77 +1,219 @@
-
-import React from "react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleDown, faAngleUp, faArrowDown, faArrowUp, faEdit, faEllipsisH, faExternalLinkAlt, faEye, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import { Col, Row, Nav, Card, Image, Button, Table, Dropdown, ProgressBar, Pagination, ButtonGroup } from '@themesberg/react-bootstrap';
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faAngleDown,
+  faAngleUp,
+  faArrowDown,
+  faArrowUp,
+  faEdit,
+  faEllipsisH,
+  faExternalLinkAlt,
+  faEye,
+  faTrashAlt,
+  faSort,
+  faInfoCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  Col,
+  Row,
+  Nav,
+  Card,
+  Image,
+  Button,
+  Table,
+  Dropdown,
+  ProgressBar,
+  Pagination,
+  ButtonGroup,
+} from "@themesberg/react-bootstrap";
 
 import { pageTraffic, pageRanking } from "../data/tables";
 import transactions from "../data/transactions";
 import commands from "../data/commands";
 
 import { useHistory } from "react-router-dom";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import { Routes } from "../routes";
 
-//styling 
+import { sort } from "fast-sort";
+
+//styling
 const leftAlign = {
-  textAlign: 'right'
-}
+  textAlign: "right",
+};
+
+const margin = {
+  margin: "0 5px",
+};
 
 const ValueChange = ({ value, suffix }) => {
   const valueIcon = value < 0 ? faAngleDown : faAngleUp;
   const valueTxtColor = value < 0 ? "text-danger" : "text-success";
 
-  return (
-    value ? <span className={valueTxtColor}>
+  return value ? (
+    <span className={valueTxtColor}>
       <FontAwesomeIcon icon={valueIcon} />
       <span className="fw-bold ms-1">
-        {Math.abs(value)}{suffix}
+        {Math.abs(value)}
+        {suffix}
       </span>
-    </span> : "--"
+    </span>
+  ) : (
+    "--"
   );
 };
 
 export const OverviewTable = (props) => {
   const history = useHistory(); // in function
-  const {grantData, search, modelToggle} = props;
-  const filtered = grantData.map(grantObj => Object.values(grantObj).some(grant => String(grant).toLowerCase().includes(search.toLowerCase())) ? grantObj : null).filter(nullObj => nullObj != null);
+  const { grantData, search, modelToggle } = props;
+  const filtered = grantData
+    .map((grantObj) =>
+      Object.values(grantObj).some((grant) =>
+        String(grant).toLowerCase().includes(search.toLowerCase())
+      )
+        ? grantObj
+        : null
+    )
+    .filter((nullObj) => nullObj != null);
+  const [sortValue, setSortValue] = useState("");
+  const [asc, setAsc] = useState(true);
+  const sorted = asc
+    ? sort(filtered).asc((grantdetail) => grantdetail[sortValue])
+    : sort(filtered).desc((grantdetail) => grantdetail[sortValue]);
 
   const TableRow = (props) => {
-    const { id, Grant_Name, Grant_Status, no_applications_closed, no_applications_open, no_applications_received, no_of_applications_allocated, 
-      no_of_cases_approved, no_of_cases_awaiting_payment, no_of_cases_declined, no_of_cases_exceptions,no_of_cases_paid, payments_made } = props;
-    console.log(payments_made,props);
+    const {
+      id,
+      Grant_Name,
+      Grant_Status,
+      no_applications_closed,
+      no_applications_open,
+      no_applications_received,
+      no_of_applications_allocated,
+      no_of_cases_approved,
+      no_of_cases_awaiting_payment,
+      no_of_cases_declined,
+      no_of_cases_exceptions,
+      no_of_cases_paid,
+      payments_made,
+      deactivated,
+    } = props;
     return (
       <tr>
         <th scope="row">{Grant_Name}</th>
-        <td style={leftAlign}>{no_applications_received == null ? 0 : no_applications_received.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-        <td style={leftAlign}>{no_of_applications_allocated == null ? 0: no_of_applications_allocated.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-        <td style={leftAlign}>{no_applications_closed == null ? 0: no_applications_closed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-        <td style={leftAlign}>{no_applications_open == null ? 0 : no_applications_open.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-        <td style={leftAlign}>{no_of_cases_approved == null ? 0: no_of_cases_approved.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-        <td style={leftAlign}>{no_of_cases_awaiting_payment == null ? 0: no_of_cases_awaiting_payment.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-        <td style={leftAlign}>{no_of_cases_declined == null ? 0: no_of_cases_declined.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-        <td style={leftAlign}>{no_of_cases_exceptions == null ? 0: no_of_cases_exceptions.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-        <td style={leftAlign}>{no_of_cases_paid == null ? 0: no_of_cases_paid.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-        <td style={leftAlign}>{"£"+payments_made.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
+        <td style={leftAlign}>
+          {no_applications_received == null
+            ? 0
+            : no_applications_received
+                ?.toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+        </td>
+        <td style={leftAlign}>
+          {no_applications_closed == null
+            ? 0
+            : no_applications_closed
+                ?.toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+        </td>
+        <td style={leftAlign}>
+          {no_applications_open == null
+            ? 0
+            : no_applications_open
+                ?.toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+        </td>
+        <td style={leftAlign}>
+          {no_of_applications_allocated == null
+            ? 0
+            : no_of_applications_allocated
+                ?.toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+        </td>
+        <td style={leftAlign}>
+          {no_of_cases_approved == null
+            ? 0
+            : no_of_cases_approved
+                ?.toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+        </td>
+        <td style={leftAlign}>
+          {no_of_cases_declined == null
+            ? 0
+            : no_of_cases_declined
+                ?.toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+        </td>
+        <td style={leftAlign}>
+          {no_of_cases_awaiting_payment == null
+            ? 0
+            : no_of_cases_awaiting_payment
+                ?.toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+        </td>
+        <td style={leftAlign}>
+          {no_of_cases_exceptions == null
+            ? 0
+            : no_of_cases_exceptions
+                ?.toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+        </td>
+        <td style={leftAlign}>
+          {deactivated == null
+            ? 0
+            : deactivated?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+        </td>
+        <td style={leftAlign}>
+          {no_of_cases_paid == null
+            ? 0
+            : no_of_cases_paid
+                ?.toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+        </td>
+        <td style={leftAlign}>
+          {"£" +
+            (payments_made == null
+              ? 0
+              : payments_made
+                  .toFixed(2)
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ","))}
+        </td>
         <td style={leftAlign}>
           {/* <button  onClick={() =>history.push({ pathname: Routes.Settings.path, state: props })}> 
             View 
           </button> */}
           {/* <Link to={Routes.Settings.path}>View</Link>  */}
           <Dropdown as={ButtonGroup}>
-            <Dropdown.Toggle as={Button} split variant="link" className="text-dark m-0 p-0">
+            <Dropdown.Toggle
+              as={Button}
+              split
+              variant="link"
+              className="text-dark m-0 p-0"
+            >
               <span className="icon icon-sm">
                 <FontAwesomeIcon icon={faEllipsisH} className="icon-dark" />
               </span>
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() =>history.push({ pathname: Routes.Settings.path, state: props })}>
-                <FontAwesomeIcon icon={faEye} className="me-2" /> View Grant Details
+              <Dropdown.Item
+                onClick={() =>
+                  history.push({
+                    pathname: `/settings/${Grant_Name}`,
+                    state: props,
+                  })
+                }
+              >
+                <FontAwesomeIcon icon={faEye} className="me-2" /> View Grant
+                Details
               </Dropdown.Item>
               <Dropdown.Item onClick={() => modelToggle()}>
                 <FontAwesomeIcon icon={faEye} className="me-2" /> View Rejection
               </Dropdown.Item>
-              <Dropdown.Item onClick={() => {console.log('clicked')}}>
+              <Dropdown.Item
+                onClick={() => {
+                  console.log("clicked");
+                }}
+              >
                 <FontAwesomeIcon icon={faEye} className="me-2" /> View Others..
               </Dropdown.Item>
             </Dropdown.Menu>
@@ -98,22 +240,171 @@ export const OverviewTable = (props) => {
       <Table responsive className="align-items-center table-flush">
         <thead className="thead-light">
           <tr>
-            <th scope="col">Grant name</th>
-            <th style={leftAlign} scope="col">Received</th>
-            <th style={leftAlign} scope="col">Allocated</th>
-            <th style={leftAlign} scope="col">closed</th>
-            <th style={leftAlign} scope="col">Open</th>
-            <th style={leftAlign} scope="col">Approved</th>
-            <th style={leftAlign} scope="col">Awaiting Payment</th>
-            <th style={leftAlign} scope="col">Declined</th>
-            <th style={leftAlign} scope="col">Exceptions</th>
-            <th style={leftAlign} scope="col">Paid</th>
-            <th style={leftAlign} scope="col">Payment Made</th>
-            <th style={leftAlign} scope="col">Action</th>
+            <th scope="col">
+              Grant name
+              <FontAwesomeIcon
+                style={margin}
+                icon={faSort}
+                onClick={() => {
+                  // console.log('clicked');
+                  setAsc((x) => !x);
+                  setSortValue("Grant_Name");
+                }}
+              />
+            </th>
+            <th style={leftAlign} scope="col">
+              Received
+              <FontAwesomeIcon
+                style={margin}
+                icon={faSort}
+                onClick={() => {
+                  // console.log('clicked');
+                  setAsc((x) => !x);
+                  setSortValue("no_applications_received");
+                }}
+              />
+            </th>
+            <th style={leftAlign} scope="col">
+              closed
+              <FontAwesomeIcon
+                style={margin}
+                icon={faSort}
+                onClick={() => {
+                  // console.log('clicked');
+                  setAsc((x) => !x);
+                  setSortValue("no_applications_closed");
+                }}
+              />
+            </th>
+            <th style={leftAlign} scope="col">
+              Open
+              <FontAwesomeIcon
+                style={margin}
+                icon={faSort}
+                onClick={() => {
+                  // console.log('clicked');
+                  setAsc((x) => !x);
+                  setSortValue("no_applications_open");
+                }}
+              />
+            </th>
+            <th style={leftAlign} scope="col">
+              <FontAwesomeIcon
+                style={margin}
+                icon={faInfoCircle}
+                onClick={() => {}}
+              />
+              Allocated
+              <FontAwesomeIcon
+                style={margin}
+                icon={faSort}
+                onClick={() => {
+                  // console.log('clicked');
+                  setAsc((x) => !x);
+                  setSortValue("no_of_applications_allocated");
+                }}
+              />
+            </th>
+
+            <th style={leftAlign} scope="col">
+              <FontAwesomeIcon
+                style={margin}
+                icon={faInfoCircle}
+                onClick={() => {}}
+              />
+              {<div>info</div>}
+              Approved
+              <FontAwesomeIcon
+                style={margin}
+                icon={faSort}
+                onClick={() => {
+                  // console.log('clicked');
+                  setAsc((x) => !x);
+                  setSortValue("no_of_cases_approved");
+                }}
+              />
+            </th>
+            <th style={leftAlign} scope="col">
+              Decline
+              <FontAwesomeIcon
+                style={margin}
+                icon={faSort}
+                onClick={() => {
+                  // console.log('clicked');
+                  setAsc((x) => !x);
+                  setSortValue("no_of_cases_approved");
+                }}
+              />
+            </th>
+            <th style={leftAlign} scope="col">
+              Awaiting Payment
+              <FontAwesomeIcon
+                style={margin}
+                icon={faSort}
+                onClick={() => {
+                  // console.log('clicked');
+                  setAsc((x) => !x);
+                  setSortValue("no_of_cases_awaiting_payment");
+                }}
+              />
+            </th>
+            <th style={leftAlign} scope="col">
+              Exceptions
+              <FontAwesomeIcon
+                style={margin}
+                icon={faSort}
+                onClick={() => {
+                  // console.log('clicked');
+                  setAsc((x) => !x);
+                  setSortValue("no_of_cases_exceptions");
+                }}
+              />
+            </th>
+            <th style={leftAlign} scope="col">
+              Deactivated
+              <FontAwesomeIcon
+                style={margin}
+                icon={faSort}
+                onClick={() => {
+                  // console.log('clicked');
+                  setAsc((x) => !x);
+                  setSortValue("no_of_cases_exceptions");
+                }}
+              />
+            </th>
+            <th style={leftAlign} scope="col">
+              Paid
+              <FontAwesomeIcon
+                style={margin}
+                icon={faSort}
+                onClick={() => {
+                  // console.log('clicked');
+                  setAsc((x) => !x);
+                  setSortValue("no_of_cases_paid");
+                }}
+              />
+            </th>
+            <th style={leftAlign} scope="col">
+              Payment Made
+              <FontAwesomeIcon
+                style={margin}
+                icon={faSort}
+                onClick={() => {
+                  // console.log('clicked');
+                  setAsc((x) => !x);
+                  setSortValue("payments_made");
+                }}
+              />
+            </th>
+            <th style={leftAlign} scope="col">
+              Action
+            </th>
           </tr>
         </thead>
         <tbody>
-          {filtered.map(pv => <TableRow key={`page-visit-${pv.id}`} {...pv} />)}
+          {sorted.map((pv) => (
+            <TableRow key={`page-visit-${pv.id}`} {...pv} />
+          ))}
         </tbody>
       </Table>
     </Card>
@@ -122,15 +413,30 @@ export const OverviewTable = (props) => {
 
 export const PageTrafficTable = () => {
   const TableRow = (props) => {
-    const { id, source, sourceIcon, sourceIconColor, sourceType, category, rank, trafficShare, change } = props;
+    const {
+      id,
+      source,
+      sourceIcon,
+      sourceIconColor,
+      sourceType,
+      category,
+      rank,
+      trafficShare,
+      change,
+    } = props;
 
     return (
       <tr>
         <td>
-          <Card.Link href="#" className="text-primary fw-bold">{id}</Card.Link>
+          <Card.Link href="#" className="text-primary fw-bold">
+            {id}
+          </Card.Link>
         </td>
         <td className="fw-bold">
-          <FontAwesomeIcon icon={sourceIcon} className={`icon icon-xs text-${sourceIconColor} w-30`} />
+          <FontAwesomeIcon
+            icon={sourceIcon}
+            className={`icon icon-xs text-${sourceIconColor} w-30`}
+          />
           {source}
         </td>
         <td>{sourceType}</td>
@@ -142,7 +448,13 @@ export const PageTrafficTable = () => {
               <small className="fw-bold">{trafficShare}%</small>
             </Col>
             <Col xs={12} xl={10} className="px-0 px-xl-1">
-              <ProgressBar variant="primary" className="progress-lg mb-0" now={trafficShare} min={0} max={100} />
+              <ProgressBar
+                variant="primary"
+                className="progress-lg mb-0"
+                now={trafficShare}
+                min={0}
+                max={100}
+              />
             </Col>
           </Row>
         </td>
@@ -169,7 +481,9 @@ export const PageTrafficTable = () => {
             </tr>
           </thead>
           <tbody>
-            {pageTraffic.map(pt => <TableRow key={`page-traffic-${pt.id}`} {...pt} />)}
+            {pageTraffic.map((pt) => (
+              <TableRow key={`page-traffic-${pt.id}`} {...pt} />
+            ))}
           </tbody>
         </Table>
       </Card.Body>
@@ -179,31 +493,39 @@ export const PageTrafficTable = () => {
 
 export const RankingTable = () => {
   const TableRow = (props) => {
-    const { country, countryImage, overallRank, overallRankChange, travelRank, travelRankChange, widgetsRank, widgetsRankChange } = props;
+    const {
+      country,
+      countryImage,
+      overallRank,
+      overallRankChange,
+      travelRank,
+      travelRankChange,
+      widgetsRank,
+      widgetsRankChange,
+    } = props;
 
     return (
       <tr>
         <td className="border-0">
           <Card.Link href="#" className="d-flex align-items-center">
-            <Image src={countryImage} className="image-small rounded-circle me-2" />
-            <div><span className="h6">{country}</span></div>
+            <Image
+              src={countryImage}
+              className="image-small rounded-circle me-2"
+            />
+            <div>
+              <span className="h6">{country}</span>
+            </div>
           </Card.Link>
         </td>
-        <td className="fw-bold border-0">
-          {overallRank ? overallRank : "-"}
-        </td>
+        <td className="fw-bold border-0">{overallRank ? overallRank : "-"}</td>
         <td className="border-0">
           <ValueChange value={overallRankChange} />
         </td>
-        <td className="fw-bold border-0">
-          {travelRank ? travelRank : "-"}
-        </td>
+        <td className="fw-bold border-0">{travelRank ? travelRank : "-"}</td>
         <td className="border-0">
           <ValueChange value={travelRankChange} />
         </td>
-        <td className="fw-bold border-0">
-          {widgetsRank ? widgetsRank : "-"}
-        </td>
+        <td className="fw-bold border-0">{widgetsRank ? widgetsRank : "-"}</td>
         <td className="border-0">
           <ValueChange value={widgetsRankChange} />
         </td>
@@ -227,7 +549,9 @@ export const RankingTable = () => {
             </tr>
           </thead>
           <tbody>
-            {pageRanking.map(r => <TableRow key={`ranking-${r.id}`} {...r} />)}
+            {pageRanking.map((r) => (
+              <TableRow key={`ranking-${r.id}`} {...r} />
+            ))}
           </tbody>
         </Table>
       </Card.Body>
@@ -237,22 +561,41 @@ export const RankingTable = () => {
 
 export const TransactionsTable = (props) => {
   const { search, grantData } = props;
-  console.log('in child');
+  console.log("in child");
   console.log(grantData);
   const totalTransactions = transactions.length;
-  const filtered = grantData.map(grantObj => Object.values(grantObj).some(grant => String(grant).toLowerCase().includes(search.toLowerCase())) ? grantObj : null).filter(nullObj => nullObj != null);
-  console.log(filtered.map(grant => console.log(grant.id)));
+  const filtered = grantData
+    .map((grantObj) =>
+      Object.values(grantObj).some((grant) =>
+        String(grant).toLowerCase().includes(search.toLowerCase())
+      )
+        ? grantObj
+        : null
+    )
+    .filter((nullObj) => nullObj != null);
+  console.log(filtered.map((grant) => console.log(grant.id)));
 
   const TableRow = (props) => {
-    const { id, Grant_Name, Grant_Status, no_applications_closed, no_applications_open, no_applications_received, no_of_applications_allocated, 
-      no_of_cases_approved, no_of_cases_awaiting_payment, no_of_cases_declined, no_of_cases_exceptions,no_of_cases_paid, payments_made } = props;
-      
+    const {
+      id,
+      Grant_Name,
+      Grant_Status,
+      no_applications_closed,
+      no_applications_open,
+      no_applications_received,
+      no_of_applications_allocated,
+      no_of_cases_approved,
+      no_of_cases_awaiting_payment,
+      no_of_cases_declined,
+      no_of_cases_exceptions,
+      no_of_cases_paid,
+      payments_made,
+    } = props;
+
     return (
       <tr>
         <td>
-          <span className="fw-normal">
-            {id}
-          </span>
+          <span className="fw-normal">{id}</span>
         </td>
         <td>
           <Card.Link as={Link} to={Routes.Invoice.path} className="fw-normal">
@@ -260,58 +603,43 @@ export const TransactionsTable = (props) => {
           </Card.Link>
         </td>
         <td>
-          <span className="fw-normal">
-            {no_applications_received}
-          </span>
+          <span className="fw-normal">{no_applications_received}</span>
         </td>
         <td>
-          <span className="fw-normal">
-            {no_of_applications_allocated}
-          </span>
+          <span className="fw-normal">{no_of_applications_allocated}</span>
         </td>
         <td>
-          <span className="fw-normal">
-            {no_applications_closed}
-          </span>
+          <span className="fw-normal">{no_applications_closed}</span>
         </td>
         <td>
-          <span className="fw-normal">
-            {no_applications_open}
-          </span>
+          <span className="fw-normal">{no_applications_open}</span>
         </td>
         <td>
-          <span className="fw-normal">
-            {no_of_cases_approved}
-          </span>
+          <span className="fw-normal">{no_of_cases_approved}</span>
         </td>
         <td>
-          <span className="fw-normal">
-            {no_of_cases_awaiting_payment}
-          </span>
+          <span className="fw-normal">{no_of_cases_awaiting_payment}</span>
         </td>
         <td>
-          <span className="fw-normal">
-            {no_of_cases_declined}
-          </span>
+          <span className="fw-normal">{no_of_cases_declined}</span>
         </td>
         <td>
-          <span className="fw-normal">
-            {no_of_cases_exceptions}
-          </span>
+          <span className="fw-normal">{no_of_cases_exceptions}</span>
         </td>
         <td>
-          <span className="fw-normal">
-            {no_of_cases_paid}
-          </span>
+          <span className="fw-normal">{no_of_cases_paid}</span>
         </td>
         <td>
-          <span className="fw-normal">
-            {payments_made}
-          </span>
+          <span className="fw-normal">{payments_made}</span>
         </td>
         <td>
           <Dropdown as={ButtonGroup}>
-            <Dropdown.Toggle as={Button} split variant="link" className="text-dark m-0 p-0">
+            <Dropdown.Toggle
+              as={Button}
+              split
+              variant="link"
+              className="text-dark m-0 p-0"
+            >
               <span className="icon icon-sm">
                 <FontAwesomeIcon icon={faEllipsisH} className="icon-dark" />
               </span>
@@ -350,26 +678,22 @@ export const TransactionsTable = (props) => {
             </tr>
           </thead>
           <tbody>
-            {
-              filtered.length > 0 && filtered.map(grant => 
-                <TableRow key={`grants-${grant.id}`} {...grant} />)
-            }
+            {filtered.length > 0 &&
+              filtered.map((grant) => (
+                <TableRow key={`grants-${grant.id}`} {...grant} />
+              ))}
           </tbody>
         </Table>
         <Card.Footer className="px-3 border-0 d-lg-flex align-items-center justify-content-between">
           <Nav>
             <Pagination className="mb-2 mb-lg-0">
-              <Pagination.Prev>
-                Previous
-              </Pagination.Prev>
+              <Pagination.Prev>Previous</Pagination.Prev>
               <Pagination.Item active>1</Pagination.Item>
               <Pagination.Item>2</Pagination.Item>
               <Pagination.Item>3</Pagination.Item>
               <Pagination.Item>4</Pagination.Item>
               <Pagination.Item>5</Pagination.Item>
-              <Pagination.Next>
-                Next
-              </Pagination.Next>
+              <Pagination.Next>Next</Pagination.Next>
             </Pagination>
           </Nav>
           <small className="fw-bold">
@@ -387,23 +711,28 @@ export const CommandsTable = () => {
 
     return (
       <tr>
-        <td className="border-0" style={{ width: '5%' }}>
+        <td className="border-0" style={{ width: "5%" }}>
           <code>{name}</code>
         </td>
-        <td className="fw-bold border-0" style={{ width: '5%' }}>
+        <td className="fw-bold border-0" style={{ width: "5%" }}>
           <ul className="ps-0">
-            {usage.map(u => (
+            {usage.map((u) => (
               <ol key={u} className="ps-0">
                 <code>{u}</code>
               </ol>
             ))}
           </ul>
         </td>
-        <td className="border-0" style={{ width: '50%' }}>
+        <td className="border-0" style={{ width: "50%" }}>
           <pre className="m-0 p-0">{description}</pre>
         </td>
-        <td className="border-0" style={{ width: '40%' }}>
-          <pre><Card.Link href={link} target="_blank">Read More <FontAwesomeIcon icon={faExternalLinkAlt} className="ms-1" /></Card.Link></pre>
+        <td className="border-0" style={{ width: "40%" }}>
+          <pre>
+            <Card.Link href={link} target="_blank">
+              Read More{" "}
+              <FontAwesomeIcon icon={faExternalLinkAlt} className="ms-1" />
+            </Card.Link>
+          </pre>
         </td>
       </tr>
     );
@@ -412,17 +741,31 @@ export const CommandsTable = () => {
   return (
     <Card border="light" className="shadow-sm">
       <Card.Body className="p-0">
-        <Table responsive className="table-centered rounded" style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+        <Table
+          responsive
+          className="table-centered rounded"
+          style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}
+        >
           <thead className="thead-light">
             <tr>
-              <th className="border-0" style={{ width: '5%' }}>Name</th>
-              <th className="border-0" style={{ width: '5%' }}>Usage</th>
-              <th className="border-0" style={{ width: '50%' }}>Description</th>
-              <th className="border-0" style={{ width: '40%' }}>Extra</th>
+              <th className="border-0" style={{ width: "5%" }}>
+                Name
+              </th>
+              <th className="border-0" style={{ width: "5%" }}>
+                Usage
+              </th>
+              <th className="border-0" style={{ width: "50%" }}>
+                Description
+              </th>
+              <th className="border-0" style={{ width: "40%" }}>
+                Extra
+              </th>
             </tr>
           </thead>
           <tbody>
-            {commands.map(c => <TableRow key={`command-${c.id}`} {...c} />)}
+            {commands.map((c) => (
+              <TableRow key={`command-${c.id}`} {...c} />
+            ))}
           </tbody>
         </Table>
       </Card.Body>
