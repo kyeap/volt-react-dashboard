@@ -49,9 +49,11 @@ export default () => {
   const [casesPaid, setCasesPaid] = useState(0);
   const [casesPendingPayment, setCasesPendingPayment] = useState(0);
   // const [date, setDate] = useState('');
-  const [startDate, setStartDate] = useState(new Date(2021, 0, 1)); //always start 1 Jan 2021
+  const [startDate, setStartDate] = useState(new Date(2020, 0, 1)); //always start 1 Jan 2021
   const [birthday, setBirthday] = useState("");
-  const [endDate, setEndDate] = useState(new Date());
+  let initialDate = new Date();
+  initialDate.setDate(initialDate.getDate() + 1);
+  const [endDate, setEndDate] = useState(initialDate);
   const [grantData, setGrantData] = useState([]);
   const [search, setSearch] = useState("");
   const getTotalPayment = (id) => {
@@ -91,8 +93,6 @@ export default () => {
         let PendingPayment = 0;
 
         for (let i = 0; i < res.data.length; i++) {
-          console.log(res.data[i].payments_made);
-          console.log(totalPayment);
           paymentSUM = paymentSUM + res.data[i].payments_made;
           openSum = openSum + res.data[i].no_applications_closed;
           closeSum = closeSum + res.data[i].no_applications_open;
