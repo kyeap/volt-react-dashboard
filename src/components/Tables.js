@@ -3,33 +3,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleDown,
   faAngleUp,
-  faArrowDown,
-  faArrowUp,
-  faEdit,
   faEllipsisH,
-  faExternalLinkAlt,
   faEye,
-  faTrashAlt,
   faSort,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   Col,
   Row,
-  Nav,
   Card,
-  Image,
   Button,
   Table,
   Dropdown,
-  ProgressBar,
-  Pagination,
   ButtonGroup,
 } from "@themesberg/react-bootstrap";
 
 import { useHistory } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { Routes } from "../routes";
 
 import { sort } from "fast-sort";
 
@@ -175,10 +164,6 @@ export const OverviewTable = (props) => {
                   .replace(/\B(?=(\d{3})+(?!\d))/g, ","))}
         </td>
         <td style={leftAlign}>
-          {/* <button  onClick={() =>history.push({ pathname: Routes.Settings.path, state: props })}> 
-            View 
-          </button> */}
-          {/* <Link to={Routes.Settings.path}>View</Link>  */}
           <Dropdown as={ButtonGroup}>
             <Dropdown.Toggle
               as={Button}
@@ -273,7 +258,6 @@ export const OverviewTable = (props) => {
                 style={margin}
                 icon={faSort}
                 onClick={() => {
-                  // console.log('clicked');
                   setAsc((x) => !x);
                   setSortValue("no_applications_open");
                 }}
@@ -290,7 +274,6 @@ export const OverviewTable = (props) => {
                 style={margin}
                 icon={faSort}
                 onClick={() => {
-                  // console.log('clicked');
                   setAsc((x) => !x);
                   setSortValue("no_of_applications_allocated");
                 }}
@@ -303,13 +286,11 @@ export const OverviewTable = (props) => {
                 icon={faInfoCircle}
                 onClick={() => {}}
               />
-              {<div>info</div>}
               Approved
               <FontAwesomeIcon
                 style={margin}
                 icon={faSort}
                 onClick={() => {
-                  // console.log('clicked');
                   setAsc((x) => !x);
                   setSortValue("no_of_cases_approved");
                 }}
@@ -321,7 +302,6 @@ export const OverviewTable = (props) => {
                 style={margin}
                 icon={faSort}
                 onClick={() => {
-                  // console.log('clicked');
                   setAsc((x) => !x);
                   setSortValue("no_of_cases_approved");
                 }}
@@ -333,7 +313,6 @@ export const OverviewTable = (props) => {
                 style={margin}
                 icon={faSort}
                 onClick={() => {
-                  // console.log('clicked');
                   setAsc((x) => !x);
                   setSortValue("no_of_cases_awaiting_payment");
                 }}

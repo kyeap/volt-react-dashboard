@@ -24,14 +24,8 @@ import Modal from "../components/modal.js";
 
 import {
   CounterWidget,
-  CircleChartWidget,
   BarChartWidget,
-  TeamMembersWidget,
   ProgressTrackWidget,
-  RankingWidget,
-  SalesValueWidget,
-  SalesValueWidgetPhone,
-  AcquisitionWidget,
 } from "../../components/Widgets";
 import { OverviewTable } from "../../components/Tables";
 import { trafficShares, totalOrders } from "../../data/charts";
