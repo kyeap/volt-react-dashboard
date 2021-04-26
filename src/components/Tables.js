@@ -16,11 +16,13 @@ import {
   Table,
   Dropdown,
   ButtonGroup,
+  Container,
 } from "@themesberg/react-bootstrap";
 
 import { useHistory } from "react-router-dom";
 
 import { sort } from "fast-sort";
+import { Popover } from "react-tiny-popover";
 
 //styling
 const leftAlign = {
@@ -29,6 +31,14 @@ const leftAlign = {
 
 const margin = {
   margin: "0 5px",
+};
+
+const popUp = {
+  background: "white",
+  border: "1px solid",
+  borderRadius: "10px",
+  margin: "12px",
+  padding: "0 10px",
 };
 
 const ValueChange = ({ value, suffix }) => {
@@ -62,6 +72,8 @@ export const OverviewTable = (props) => {
     .filter((nullObj) => nullObj != null);
   const [sortValue, setSortValue] = useState("");
   const [asc, setAsc] = useState(true);
+  const [isAllocatedPopoverOpen, setIsAllocatedPopoverOpen] = useState(false);
+  const [isApprovedPopoverOpen, setIsApprovedPopoverOpen] = useState(false);
   const sorted = asc
     ? sort(filtered).asc((grantdetail) => grantdetail[sortValue])
     : sort(filtered).desc((grantdetail) => grantdetail[sortValue]);
@@ -264,37 +276,74 @@ export const OverviewTable = (props) => {
               />
             </th>
             <th style={leftAlign} scope="col">
-              <FontAwesomeIcon
-                style={margin}
-                icon={faInfoCircle}
-                onClick={() => {}}
-              />
-              Allocated
-              <FontAwesomeIcon
-                style={margin}
-                icon={faSort}
-                onClick={() => {
-                  setAsc((x) => !x);
-                  setSortValue("no_of_applications_allocated");
-                }}
-              />
+              <Container style={{ paddingLeft: 0, paddingRight: 0 }}>
+                <Row className="flex-nowrap">
+                  <Col>
+                    <Popover
+                      isOpen={isAllocatedPopoverOpen}
+                      positions={["top", "bottom", "left", "right"]} // preferred positions by priority
+                      content={<div style={popUp}> approve + decline.</div>}
+                    >
+                      <div
+                        onClick={() =>
+                          setIsAllocatedPopoverOpen(!isAllocatedPopoverOpen)
+                        }
+                      >
+                        <FontAwesomeIcon style={margin} icon={faInfoCircle} />
+                      </div>
+                    </Popover>
+                  </Col>
+                  <Col>Allocated</Col>
+                  <Col>
+                    <FontAwesomeIcon
+                      style={margin}
+                      icon={faSort}
+                      onClick={() => {
+                        setAsc((x) => !x);
+                        setSortValue("no_of_applications_allocated");
+                      }}
+                    />
+                  </Col>
+                </Row>
+              </Container>
             </th>
 
             <th style={leftAlign} scope="col">
-              <FontAwesomeIcon
-                style={margin}
-                icon={faInfoCircle}
-                onClick={() => {}}
-              />
-              Approved
-              <FontAwesomeIcon
-                style={margin}
-                icon={faSort}
-                onClick={() => {
-                  setAsc((x) => !x);
-                  setSortValue("no_of_cases_approved");
-                }}
-              />
+              <Container style={{ paddingLeft: 0, paddingRight: 0 }}>
+                <Row className="flex-nowrap">
+                  <Col>
+                    <Popover
+                      isOpen={isApprovedPopoverOpen}
+                      positions={["top", "bottom", "left", "right"]} // preferred positions by priority
+                      content={
+                        <div style={popUp}>
+                          {" "}
+                          paid + awaiting payment + deactivated
+                        </div>
+                      }
+                    >
+                      <div
+                        onClick={() =>
+                          setIsApprovedPopoverOpen(!isApprovedPopoverOpen)
+                        }
+                      >
+                        <FontAwesomeIcon style={margin} icon={faInfoCircle} />
+                      </div>
+                    </Popover>
+                  </Col>
+                  <Col>Approved</Col>
+                  <Col>
+                    <FontAwesomeIcon
+                      style={margin}
+                      icon={faSort}
+                      onClick={() => {
+                        setAsc((x) => !x);
+                        setSortValue("no_of_cases_approved");
+                      }}
+                    />
+                  </Col>
+                </Row>
+              </Container>
             </th>
             <th style={leftAlign} scope="col">
               Decline
