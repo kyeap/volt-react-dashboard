@@ -226,6 +226,8 @@ export default () => {
                       modelToggle={modelToggle}
                       search={search}
                       grantData={grantAllArr}
+                      startDate={startDateStr}
+                      endDate={endDateStr}
                     />
                   )}
                 </Col>

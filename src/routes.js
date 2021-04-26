@@ -2,7 +2,7 @@ export const Routes = {
   // pages
   DashboardOverview: { path: "/" },
   Transactions: { path: "/transactions" },
-  Settings: { path: "/settings/:id" },
+  Settings: { path: "/settings/:id/:startDate/:endDate" },
   Upgrade: { path: "/upgrade" },
   BootstrapTables: { path: "/tables/bootstrap-tables" },
   Billing: { path: "/examples/billing" },

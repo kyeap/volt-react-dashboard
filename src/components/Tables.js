@@ -50,7 +50,7 @@ const ValueChange = ({ value, suffix }) => {
 
 export const OverviewTable = (props) => {
   const history = useHistory(); // in function
-  const { grantData, search, modelToggle } = props;
+  const { grantData, search, modelToggle, startDate, endDate } = props;
   const filtered = grantData
     ?.map((grantObj) =>
       Object.values(grantObj).some((grant) =>
@@ -179,7 +179,7 @@ export const OverviewTable = (props) => {
               <Dropdown.Item
                 onClick={() =>
                   history.push({
-                    pathname: `/settings/${Grant_Name}`,
+                    pathname: `/settings/${Grant_Name}/${startDate}/${endDate}`,
                     state: props,
                   })
                 }
