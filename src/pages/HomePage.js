@@ -4,7 +4,7 @@ import { Routes } from "../routes";
 
 // pages
 import DashboardOverview from "./dashboard/DashboardOverview";
-import Settings from "./Settings";
+import Details from "./Details";
 import Signin from "./examples/Signin";
 import Signup from "./examples/Signup";
 import ForgotPassword from "./examples/ForgotPassword";
@@ -129,7 +129,7 @@ export default () => (
       path={Routes.DashboardOverview.path}
       component={DashboardOverview}
     />
-    <RouteWithSidebar exact path={Routes.Settings.path} component={Settings} />
+    <RouteWithSidebar exact path={Routes.Details.path} component={Details} />
 
     <Redirect to={Routes.NotFound.path} />
   </Switch>
