@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCashRegister,
@@ -33,6 +33,8 @@ import { trafficShares, totalOrders } from "../../data/charts";
 // import { grants, grant } from "../../data/tables";
 
 import "react-datepicker/dist/react-datepicker.css";
+import "../../css/styles.css";
+
 import { useFetchAll } from "../../data/grants";
 
 export default () => {
@@ -186,7 +188,7 @@ export default () => {
         </Col>
       </Row>
       <Row>
-        <Col xs={8} md={6} lg={3} xl={4}>
+        <Col xs={8} md={6} lg={3} xl={2}>
           <InputGroup>
             <InputGroup.Text>
               <FontAwesomeIcon icon={faSearch} />
@@ -198,14 +200,14 @@ export default () => {
             />
           </InputGroup>
         </Col>
-        <Col xs={12} sm={1} xl={2} className="mb-4">
+        <Col xs={12} sm={2} md={6} lg={6} xl={2} className="mb-4">
           <DatePicker
             dateFormat="dd/MM/yyyy"
             selected={startDate}
             onChange={(date) => setStartDate(date)}
           />
         </Col>
-        <Col xs={12} sm={1} xl={2} className="mb-4">
+        <Col xs={12} sm={2} md={1} lg={1} xl={2} className="mb-4">
           <DatePicker
             dateFormat="dd/MM/yyyy"
             selected={endDate}
