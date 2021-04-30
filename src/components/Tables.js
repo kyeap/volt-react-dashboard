@@ -8,16 +8,7 @@ import {
   faSort,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import {
-  Col,
-  Row,
-  Card,
-  Button,
-  Table,
-  Dropdown,
-  ButtonGroup,
-  Container,
-} from "@themesberg/react-bootstrap";
+import {Col,Row,Card,Button,Table,Dropdown,ButtonGroup,Container} from "@themesberg/react-bootstrap";
 
 import { useHistory } from "react-router-dom";
 
@@ -41,6 +32,14 @@ const popUp = {
   padding: "0 10px",
 };
 
+const hoverStyle = (hover) => {
+  if (hover) {
+    return ({
+      cursor:"pointer",
+    })
+  }
+}
+
 const ValueChange = ({ value, suffix }) => {
   const valueIcon = value < 0 ? faAngleDown : faAngleUp;
   const valueTxtColor = value < 0 ? "text-danger" : "text-success";
@@ -58,6 +57,9 @@ const ValueChange = ({ value, suffix }) => {
   );
 };
 
+// add comma to every thousand 
+const commaSeperator = (numb) => numb?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+
 export const OverviewTable = (props) => {
   const history = useHistory(); // in function
   const { grantData, search, modelToggle, startDate, endDate } = props;
@@ -74,106 +76,47 @@ export const OverviewTable = (props) => {
   const [asc, setAsc] = useState(true);
   const [isAllocatedPopoverOpen, setIsAllocatedPopoverOpen] = useState(false);
   const [isApprovedPopoverOpen, setIsApprovedPopoverOpen] = useState(false);
+  const [hover, setHover] = useState(false);
   const sorted = asc
     ? sort(filtered).asc((grantdetail) => grantdetail[sortValue])
     : sort(filtered).desc((grantdetail) => grantdetail[sortValue]);
 
   const TableRow = (props) => {
-    const {
-      id,
-      Grant_Name,
-      Grant_Status,
-      no_applications_closed,
-      no_applications_open,
-      no_applications_received,
-      no_of_applications_allocated,
-      no_of_cases_approved,
-      no_of_cases_awaiting_payment,
-      no_of_cases_declined,
-      no_of_cases_exceptions,
-      no_of_cases_paid,
-      payments_made,
-      deactivated,
-    } = props;
+    const {id,Grant_Name,Grant_Status,no_applications_closed,no_applications_open,no_applications_received,
+      no_of_applications_allocated,no_of_cases_approved,no_of_cases_awaiting_payment,no_of_cases_declined,
+      no_of_cases_exceptions,no_of_cases_paid,payments_made,deactivated} = props;
+
+    const propArr = [no_applications_received,no_applications_closed,no_applications_open,no_of_applications_allocated,
+      no_of_cases_approved,no_of_cases_declined,no_of_cases_awaiting_payment,no_of_cases_exceptions,deactivated,no_of_cases_paid];
     return (
-      <tr>
-        <th scope="row">{Grant_Name}</th>
-        <td style={leftAlign}>
-          {no_applications_received == null
-            ? 0
-            : no_applications_received
-                ?.toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-        </td>
-        <td style={leftAlign}>
-          {no_applications_closed == null
-            ? 0
-            : no_applications_closed
-                ?.toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-        </td>
-        <td style={leftAlign}>
-          {no_applications_open == null
-            ? 0
-            : no_applications_open
-                ?.toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-        </td>
-        <td style={leftAlign}>
-          {no_of_applications_allocated == null
-            ? 0
-            : no_of_applications_allocated
-                ?.toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-        </td>
-        <td style={leftAlign}>
-          {no_of_cases_approved == null
-            ? 0
-            : no_of_cases_approved
-                ?.toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-        </td>
-        <td style={leftAlign}>
-          {no_of_cases_declined == null
-            ? 0
-            : no_of_cases_declined
-                ?.toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-        </td>
-        <td style={leftAlign}>
-          {no_of_cases_awaiting_payment == null
-            ? 0
-            : no_of_cases_awaiting_payment
-                ?.toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-        </td>
-        <td style={leftAlign}>
-          {no_of_cases_exceptions == null
-            ? 0
-            : no_of_cases_exceptions
-                ?.toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-        </td>
-        <td style={leftAlign}>
-          {deactivated == null
-            ? 0
-            : deactivated?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-        </td>
-        <td style={leftAlign}>
-          {no_of_cases_paid == null
-            ? 0
-            : no_of_cases_paid
-                ?.toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-        </td>
+      <tr style={no_of_cases_awaiting_payment == no_of_cases_exceptions? {color:"grey"}: {color: "black"}}>
+        <th 
+          scope="row" 
+          style= {hoverStyle(hover)}
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave = {() => setHover(false)}
+          onClick={() =>
+                  history.push({
+                    pathname: `/Details/${Grant_Name}/${startDate}/${endDate}`,
+                    state: props,
+                  })
+        }>
+            {Grant_Name}
+        </th>
+        {propArr.map((ele) => {
+          return (
+            <td style={leftAlign}>
+              {ele == null
+                ? 0
+                : commaSeperator(ele)}
+            </td>
+          )
+        })}
         <td style={leftAlign}>
           {"£" +
             (payments_made == null
               ? 0
-              : payments_made
-                  .toFixed(2)
-                  .toString()
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, ","))}
+              : commaSeperator(payments_made.toFixed(2)))}
         </td>
         <td style={leftAlign}>
           <Dropdown as={ButtonGroup}>
@@ -191,7 +134,7 @@ export const OverviewTable = (props) => {
               <Dropdown.Item
                 onClick={() =>
                   history.push({
-                    pathname: `/settings/${Grant_Name}/${startDate}/${endDate}`,
+                    pathname: `/Details/${Grant_Name}/${startDate}/${endDate}`,
                     state: props,
                   })
                 }
@@ -307,7 +250,6 @@ export const OverviewTable = (props) => {
                 </Row>
               </Container>
             </th>
-
             <th style={leftAlign} scope="col">
               <Container style={{ paddingLeft: 0, paddingRight: 0 }}>
                 <Row className="flex-nowrap">
